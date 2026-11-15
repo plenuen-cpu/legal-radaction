@@ -171,3 +171,9 @@ def test_llm_failure_does_not_break_processing():
     result = run(text, llm=BrokenLlm())
     assert "900101-1234568" not in result.text
     assert any("AI 분석 실패" in warning for warning in result.warnings)
+
+
+def test_adjacent_addresses_merge_into_one():
+    text = "소재지: 경기도 성남시 분당구 정자동 123-4 래미안아파트 101동 1002호"
+    result = run(text, use_llm=False)
+    assert result.text.count("[주소") == 1

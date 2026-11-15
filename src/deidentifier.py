@@ -203,6 +203,23 @@ def _valid_llm_entity(text: str, label: str) -> bool:
     return False
 
 
+def _merge_adjacent_addresses(text: str, spans: List[P.Match]) -> List[P.Match]:
+    """'정자동 123-4' + '래미안아파트 101동 1002호'처럼 붙어 있는 주소를 하나로 묶는다."""
+    merged: List[P.Match] = []
+    for span in sorted(spans, key=lambda m: m.start):
+        if merged and span.label == "ADDRESS" and merged[-1].label == "ADDRESS":
+            prev = merged[-1]
+            gap = text[prev.end:span.start]
+            if len(gap) <= 5 and gap.strip(" ,\t") == "":
+                merged[-1] = P.Match(
+                    prev.start, span.end, text[prev.start:span.end],
+                    "ADDRESS", prev.rule, prev.priority,
+                )
+                continue
+        merged.append(span)
+    return merged
+
+
 def _apply_spans(text: str, spans: Sequence[P.Match], table: MappingTable,
                  source: str = "regex") -> tuple:
     """겹치지 않는 구간을 치환해 (결과문자열, 사용된 구간) 반환."""
@@ -343,6 +360,8 @@ class Deidentifier:
                 )
         if len(expanded) > len(refined):
             refined = P.resolve_overlaps(expanded)
+
+        refined = _merge_adjacent_addresses(text, refined)
 
         masked, used = _apply_spans(text, refined, table, source="regex")
         return masked, used

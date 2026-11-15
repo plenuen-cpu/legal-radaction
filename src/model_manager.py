@@ -137,27 +137,33 @@ class ModelManager:
                 if not total:
                     total = spec.size
                 mode = "ab" if resume_from else "wb"
-                with part.open(mode) as handle:
-                    while True:
-                        if cancel_check and cancel_check():
-                            raise DownloadCancelled("다운로드가 취소되었습니다.")
-                        block = response.read(CHUNK)
-                        if not block:
-                            break
-                        handle.write(block)
-                        downloaded += len(block)
-                        elapsed = max(time.time() - started, 0.001)
-                        _emit(
-                            progress,
-                            DownloadStatus(
-                                key=key,
-                                path=part,
-                                total=total,
-                                downloaded=downloaded,
-                                percent=round(min(downloaded / total * 100, 100.0), 1) if total else 0.0,
-                                speed_bps=downloaded / elapsed,
-                            ),
-                        )
+                try:
+                    with part.open(mode) as handle:
+                        while True:
+                            if cancel_check and cancel_check():
+                                raise DownloadCancelled("다운로드가 취소되었습니다.")
+                            block = response.read(CHUNK)
+                            if not block:
+                                break
+                            handle.write(block)
+                            downloaded += len(block)
+                            elapsed = max(time.time() - started, 0.001)
+                            _emit(
+                                progress,
+                                DownloadStatus(
+                                    key=key,
+                                    path=part,
+                                    total=total,
+                                    downloaded=downloaded,
+                                    percent=round(min(downloaded / total * 100, 100.0), 1) if total else 0.0,
+                                    speed_bps=downloaded / elapsed,
+                                ),
+                            )
+                except OSError as exc:
+                    raise ModelError(
+                        "모델 파일을 저장하지 못했습니다. 디스크 공간과 폴더 쓰기 권한을 확인하세요. "
+                        f"({exc})"
+                    ) from exc
         except urllib.error.HTTPError as exc:
             raise ModelError(f"모델 다운로드에 실패했습니다(HTTP {exc.code}). 네트워크를 확인하세요.") from exc
         except urllib.error.URLError as exc:
