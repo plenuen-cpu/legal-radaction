@@ -38,6 +38,9 @@ for package in (
     "pymupdf",
     "PIL",
     "tkinterdnd2",
+    "omegaconf",
+    "yaml",
+    "cv2",
 ):
     add_package(package)
 

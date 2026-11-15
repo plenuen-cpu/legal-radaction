@@ -1,8 +1,7 @@
-# 실행에 필요한 공통 패키지 (Windows / macOS / Linux)
 pymupdf>=1.24,<3
 python-docx>=1.1,<2
-rapidocr>=3.0,<4
+rapidocr==3.10.0
 onnxruntime>=1.17,<2
 numpy>=1.26
 pillow>=10
-customtkinter>=5.2
+customtkinter>=5.2,<7
