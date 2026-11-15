@@ -124,3 +124,17 @@ coll = COLLECT(
     upx_exclude=[],
     name="LegalDeid",
 )
+
+# --- 빌드 후 검증: 포터블 폴더에 exe와 한국어 OCR 모델이 실제로 있는지 확인
+dist_dir = ROOT / "dist" / "LegalDeid"
+exe_path = dist_dir / "LegalDeid.exe"
+ocr_out = dist_dir / "models" / "ocr"
+onnx_out = sorted(ocr_out.glob("*.onnx")) if ocr_out.exists() else []
+print(f"[spec] exe: {exe_path} ({'OK' if exe_path.exists() else 'MISSING'})")
+print(f"[spec] OCR 모델: {len(onnx_out)}개 -> {ocr_out}")
+for path in onnx_out:
+    print(f"[spec]   - {path.name} ({path.stat().st_size / 1024 / 1024:.1f} MB)")
+if not exe_path.exists():
+    raise SystemExit("[spec] 빌드 실패: LegalDeid.exe 가 생성되지 않았습니다.")
+if len(onnx_out) < 2:
+    raise SystemExit(f"[spec] 빌드 실패: models/ocr 에 ONNX 모델이 없습니다 ({ocr_out})")

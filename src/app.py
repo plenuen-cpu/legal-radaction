@@ -22,7 +22,7 @@ import customtkinter as ctk
 import config
 import pipeline
 from model_manager import DownloadStatus, ModelError, ModelManager
-from paths import app_dir, log_dir, settings_path
+from paths import app_dir, bundled_ocr_models_dir, log_dir, settings_path
 
 try:  # 선택 기능: 끌어다 놓기
     from tkinterdnd2 import DND_FILES, TkinterDnD
@@ -598,8 +598,61 @@ def _enable_windows_dpi() -> None:
             pass
 
 
+def selftest() -> int:
+    """설치 진단: 필요한 구성요소와 OCR 모델을 확인하고 selftest.log에 기록한다.
+
+    exe가 실행되지 않을 때 명령 프롬프트에서 `LegalDeid.exe --selftest`로 돌려볼 수 있다.
+    """
+    lines = []
+    ok = True
+
+    def check(label: str, func) -> None:
+        nonlocal ok
+        try:
+            detail = func()
+            lines.append(f"[OK]   {label}: {detail}")
+        except Exception as exc:
+            ok = False
+            lines.append(f"[FAIL] {label}: {exc!r}")
+
+    check("tkinter", lambda: __import__("tkinter").TkVersion)
+    check("customtkinter", lambda: __import__("customtkinter").__version__)
+    check("pymupdf", lambda: __import__("pymupdf").__doc__.splitlines()[0] if __import__("pymupdf").__doc__ else "ok")
+    check("rapidocr", lambda: "imported" if __import__("rapidocr") else "")
+    check("llama_cpp", lambda: "imported" if __import__("llama_cpp") else "")
+    check("python-docx", lambda: "imported" if __import__("docx") else "")
+
+    def ocr_models() -> str:
+        directory = bundled_ocr_models_dir()
+        if directory is None:
+            raise RuntimeError("models/ocr 폴더를 찾지 못했습니다")
+        files = sorted(p.name for p in directory.glob("*.onnx"))
+        if len(files) < 2:
+            raise RuntimeError(f"ONNX 모델이 부족합니다: {files}")
+        return f"{directory} ({len(files)}개)"
+
+    check("OCR 모델", ocr_models)
+
+    def tk_window() -> str:
+        root = ctk.CTk()
+        root.withdraw()
+        root.update_idletasks()
+        root.destroy()
+        return "창 생성/종료 정상"
+
+    check("GUI 창", tk_window)
+
+    log_path = log_dir() / "selftest.log"
+    log_path.write_text("\n".join(lines) + f"\n\n결과: {'정상' if ok else '문제 있음'}\n", encoding="utf-8")
+    if os.name == "nt" and "--console" in sys.argv:
+        print("\n".join(lines))
+    return 0 if ok else 1
+
+
 def main() -> int:
     _enable_windows_dpi()
+    if "--selftest" in sys.argv:
+        return selftest()
     try:
         app = LegalDeidApp()
     except Exception:

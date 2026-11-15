@@ -213,6 +213,17 @@ legal-deid/
 
 ---
 
+### 실행 진단
+
+```powershell
+LegalDeid.exe --selftest
+# 로그: %LOCALAPPDATA%\LegalDeid\logs\selftest.log
+```
+
+Tk·OCR 모델·llama-cpp 등 구성요소와 GUI 창 생성까지 점검합니다.
+
+---
+
 ## 7. 한계와 주의
 
 - OCR은 스캔 품질·기울기·도장에 따라 오탈자가 생길 수 있습니다. 숫자 한 글자가 틀리면 정규식이 놓칠 수 있습니다.

@@ -36,3 +36,6 @@
 
 ■ 문의
 - 프로그램 오류: 실행 폴더의 사용법과 함께 오류 화면을 캡처해 전달해 주세요.
+- 실행이 안 될 때: 명령 프롬프트(cmd)에서 아래를 실행하면 진단 로그가 남습니다.
+    LegalDeid.exe --selftest
+  로그 위치: %LOCALAPPDATA%\LegalDeid\logs\selftest.log
