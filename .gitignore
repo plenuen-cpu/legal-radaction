@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# 빌드 산출물
+build/
+dist/
+*.spec.bak
+
+# 모델(용량 큼) — 필요하면 tools/fetch_ocr_models.py 로 받는다
+models/*.gguf
+models/ocr/*.onnx
+*.part
+*.bad
+
+# 테스트 산출물
+tests/out_*/
+tests/fixtures/*.pdf
+tests/fixtures/*.png
+tests/fixtures/*.docx
+tests/fixtures/*.txt
+
+# OS
+.DS_Store
+Thumbs.db

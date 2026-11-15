@@ -1,0 +1,4 @@
+# 로컬 LLM(선택) — CPU 전용 휠을 쓰려면 아래 인덱스를 함께 지정한다.
+#   pip install -r requirements-llm.txt --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+# (인덱스를 쓰지 않으면 소스 빌드가 되어 Visual Studio Build Tools가 필요하다.)
+llama-cpp-python==0.3.19
