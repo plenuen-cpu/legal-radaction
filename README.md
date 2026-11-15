@@ -12,6 +12,12 @@
 
 > ⚠️ 자동 처리 결과는 100% 완벽하지 않습니다. **대조표를 원문과 함께 검수**한 뒤 사용하세요.
 
+## 내려받기
+
+- 최신 릴리스: <https://github.com/plenuen-cpu/legal-radaction/releases/latest>
+- `LegalDeid-windows.zip` (약 206MB) — Windows 10/11 64bit, 설치 불필요
+- 빌드: GitHub Actions `windows-latest` / Python 3.11 / PyInstaller — 테스트 80개 통과 후 자동 패키징
+
 ---
 
 ## 1. 빠른 시작 (일반 사용자)
