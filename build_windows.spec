@@ -111,6 +111,8 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     icon=icon,
+    # 포터블 폴더: exe 바로 옆에 models/ocr, DLL, 사용법이 놓이도록 _internal 폴더를 쓰지 않는다.
+    contents_directory=".",
 )
 
 coll = COLLECT(
